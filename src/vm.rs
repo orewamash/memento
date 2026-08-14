@@ -225,6 +225,54 @@ mod tests {
     }
 
     #[test]
+    fn stops_when_subtraction_overflows() {
+        let mut vm = Vm::new(program_from("push -9223372036854775808\npush 1\nsubtract"));
+
+        vm.step();
+        vm.step();
+        assert!(!vm.step());
+
+        assert_eq!(vm.stack(), &[i64::MIN, 1]);
+        assert_eq!(vm.instruction_pointer(), 2);
+    }
+
+    #[test]
+    fn stops_when_multiplication_overflows() {
+        let mut vm = Vm::new(program_from("push 9223372036854775807\npush 2\nmultiply"));
+
+        vm.step();
+        vm.step();
+        assert!(!vm.step());
+
+        assert_eq!(vm.stack(), &[i64::MAX, 2]);
+        assert_eq!(vm.instruction_pointer(), 2);
+    }
+
+    #[test]
+    fn step_after_the_end_reports_the_program_is_over() {
+        let mut vm = Vm::new(program_from("push 1"));
+
+        assert!(vm.step());
+        assert!(!vm.step());
+    }
+
+    #[test]
+    fn rewinds_past_halt() {
+        let mut vm = Vm::new(program_from("push 1\nhalt"));
+
+        vm.step();
+        vm.step();
+
+        assert!(vm.step_back());
+        assert_eq!(vm.stack(), &[1]);
+        assert_eq!(vm.instruction_pointer(), 1);
+
+        assert!(vm.step_back());
+        assert_eq!(vm.stack(), &[]);
+        assert_eq!(vm.instruction_pointer(), 0);
+    }
+
+    #[test]
     fn run_stops_on_a_math_error() {
         let mut vm = Vm::new(program_from("push 5\nsubtract\npush 100\nhalt"));
 

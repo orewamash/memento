@@ -155,4 +155,21 @@ mod tests {
         // End-of-file must quit the debugger, not loop forever.
         run_debugger_loop(&mut vm, io::empty());
     }
+
+    #[test]
+    fn debugger_quits_on_q() {
+        let mut vm = Vm::new(assemble("push 1\nhalt").unwrap());
+
+        run_debugger_loop(&mut vm, io::Cursor::new("q\n"));
+    }
+
+    #[test]
+    fn debugger_steps_forward_and_back() {
+        let mut vm = Vm::new(assemble("push 1\npush 2\nadd\nhalt").unwrap());
+
+        run_debugger_loop(&mut vm, io::Cursor::new("n\nn\nb\nq\n"));
+
+        assert_eq!(vm.stack(), &[1]);
+        assert_eq!(vm.instruction_pointer(), 1);
+    }
 }
