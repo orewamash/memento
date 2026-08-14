@@ -1,0 +1,5 @@
+# Stack: starts empty, ends with 42
+push 40
+push 2
+add
+halt

@@ -1,0 +1,7 @@
+# Repeats pushes then a multiply, and a subtraction
+push 10
+push 10
+multiply
+push 50
+subtract
+halt

@@ -1,0 +1,9 @@
+# Calculates (2 + 3) * 4 - 15
+push 2
+push 3
+add
+push 4
+multiply
+push 15
+subtract
+halt
